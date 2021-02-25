@@ -1,4 +1,4 @@
-package com.challenge.demo;
+package com.challenge.demo.site;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

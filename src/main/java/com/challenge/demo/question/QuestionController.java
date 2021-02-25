@@ -1,5 +1,8 @@
-package com.challenge.demo;
+package com.challenge.demo.question;
 
+import com.challenge.demo.question.dto.QuestionAnswerDTO;
+import com.challenge.demo.question.dto.QuestionDTO;
+import com.challenge.demo.site.SiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +27,7 @@ public class QuestionController {
 	QuestionRepository questionRepository;
 
 	@Autowired
-	SiteRepository siteRepository;
+    SiteRepository siteRepository;
 
 	@Autowired
 	QuestionAnswerRepository qaRepository;
@@ -85,7 +88,7 @@ public class QuestionController {
 	@PostMapping("/{id}/answers")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<QuestionAnswerDTO> createQuestionAnswers(@PathVariable(value = "id") Long questionId,
-																   @RequestBody QuestionAnswerDTO newQADto) {
+                                                                   @RequestBody QuestionAnswerDTO newQADto) {
 		return questionRepository
 				.findById(questionId)
 				.map(question -> {

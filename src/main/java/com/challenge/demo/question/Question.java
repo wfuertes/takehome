@@ -1,5 +1,6 @@
-package com.challenge.demo;
+package com.challenge.demo.question;
 
+import com.challenge.demo.site.Site;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
