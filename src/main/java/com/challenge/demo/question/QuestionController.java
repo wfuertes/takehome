@@ -3,7 +3,6 @@ package com.challenge.demo.question;
 import com.challenge.demo.question.dto.QuestionAnswerDTO;
 import com.challenge.demo.question.dto.QuestionDTO;
 import com.challenge.demo.site.SiteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,16 +22,17 @@ import java.util.Optional;
 @RequestMapping("/questions")
 public class QuestionController {
 
-	@Autowired
-	QuestionRepository questionRepository;
+	private final QuestionRepository questionRepository;
+    private final SiteRepository siteRepository;
+    private final QuestionAnswerRepository qaRepository;
 
-	@Autowired
-    SiteRepository siteRepository;
+    public QuestionController(QuestionRepository questionRepository, SiteRepository siteRepository, QuestionAnswerRepository qaRepository) {
+        this.questionRepository = questionRepository;
+        this.siteRepository = siteRepository;
+        this.qaRepository = qaRepository;
+    }
 
-	@Autowired
-	QuestionAnswerRepository qaRepository;
-
-	@PostMapping()
+    @PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<QuestionDTO> createQuestion(@RequestBody QuestionDTO incomingQuestion) {
 		return siteRepository
@@ -44,7 +44,7 @@ public class QuestionController {
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
-	@GetMapping()
+	@GetMapping
 	public ResponseEntity<List<QuestionDTO>> getSites() {
 		return Optional
 				.ofNullable(questionRepository.findAll())

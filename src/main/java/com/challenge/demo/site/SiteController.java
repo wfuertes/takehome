@@ -1,6 +1,5 @@
 package com.challenge.demo.site;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,12 +21,15 @@ import java.util.UUID;
 @RequestMapping("/sites")
 public class SiteController {
 
-	@Autowired
-	SiteRepository siteRepository;
+	private final SiteRepository siteRepository;
 
-	@PostMapping()
-	@ResponseStatus(HttpStatus.CREATED)
+    public SiteController(SiteRepository siteRepository) {
+        this.siteRepository = siteRepository;
+    }
+
+    @PostMapping
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	public Site createSite(@RequestBody Site createSite) {
 		createSite.setSiteUUID(UUID.randomUUID());
 
@@ -72,6 +74,4 @@ public class SiteController {
 				.map(site -> ResponseEntity.ok(site))
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
-
-
 }
