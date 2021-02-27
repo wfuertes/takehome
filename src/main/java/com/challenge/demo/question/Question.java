@@ -10,6 +10,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,6 +23,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,6 +49,11 @@ public class Question implements Serializable {
 	@NotBlank
 	@Length(min = 0, max = 250)
 	private String question;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+	@Column(name = "question_type")
+	private QuestionType questionType;
 
 	@OneToMany(mappedBy = "question", fetch = FetchType.EAGER)
 	private List<QuestionAnswer> answers = new ArrayList<>();
@@ -94,7 +102,15 @@ public class Question implements Serializable {
 		return answers;
 	}
 
-	@Override
+    public QuestionType getQuestionType() {
+        return questionType;
+    }
+
+    public void setQuestionType(QuestionType questionType) {
+        this.questionType = questionType;
+    }
+
+    @Override
 	public boolean equals(final Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
