@@ -1,10 +1,10 @@
 package com.challenge.demo.question;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -14,11 +14,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -28,11 +30,11 @@ public class QuestionAnswer implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "question_answer_id")
 	private Long id;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "question_id", referencedColumnName = "question_id")
 	private Question question;
 
@@ -41,57 +43,63 @@ public class QuestionAnswer implements Serializable {
 	@Column(nullable = false, columnDefinition = "TINYINT(1)")
 	private boolean isCorrectAnswer;
 
+    @OneToMany(mappedBy = "answer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<QuestionAnswerOption> answerOptions;
+
+	@CreatedDate
 	@Column(nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	@CreatedDate
 	private Date createdAt;
 
+	@LastModifiedDate
 	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	@LastModifiedDate
 	private Date updatedAt;
 
-	public QuestionAnswer() {
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Question getQuestion() {
-		return question;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setQuestion(final Question question) {
-		this.question = question;
-	}
+    public Question getQuestion() {
+        return question;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
 
-	public void setId(final Long id) {
-		this.id = id;
-	}
+    public String getAnswer() {
+        return answer;
+    }
 
-	public String getAnswer() {
-		return answer;
-	}
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
 
-	public void setAnswer(final String Answer) {
-		this.answer = Answer;
-	}
+    public boolean isCorrectAnswer() {
+        return isCorrectAnswer;
+    }
 
-	public boolean isCorrectAnswer() {
-		return isCorrectAnswer;
-	}
+    public void setCorrectAnswer(boolean correctAnswer) {
+        isCorrectAnswer = correctAnswer;
+    }
 
-	public void setIsCorrectAnswer(boolean isCorrectAnswer) {
-		this.isCorrectAnswer = isCorrectAnswer;
-	}
+    public List<QuestionAnswerOption> getAnswerOptions() {
+        return answerOptions;
+    }
 
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public void setAnswerOptions(List<QuestionAnswerOption> answerOptions) {
+        this.answerOptions = answerOptions;
+    }
+
 	public Date getCreatedAt() {
 		return createdAt;
 	}
 
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public Date getUpdatedAt() {
 		return updatedAt;
 	}

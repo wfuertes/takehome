@@ -3,6 +3,7 @@ package com.challenge.demo.question;
 import com.challenge.demo.question.dto.QuestionAnswerDTO;
 import com.challenge.demo.question.dto.QuestionDTO;
 import com.challenge.demo.site.SiteRepository;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,44 +16,51 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/questions")
 public class QuestionController {
 
-	private final QuestionRepository questionRepository;
     private final SiteRepository siteRepository;
-    private final QuestionAnswerRepository qaRepository;
+    private final QuestionRepository questionRepository;
+    private final QuestionAnswerRepository answerRepository;
+    private final QuestionAnswerOptionRepository optionRepository;
 
-    public QuestionController(QuestionRepository questionRepository, SiteRepository siteRepository, QuestionAnswerRepository qaRepository) {
-        this.questionRepository = questionRepository;
+    public QuestionController(SiteRepository siteRepository,
+                              QuestionRepository questionRepository,
+                              QuestionAnswerRepository answerRepository,
+                              QuestionAnswerOptionRepository optionRepository) {
         this.siteRepository = siteRepository;
-        this.qaRepository = qaRepository;
+        this.questionRepository = questionRepository;
+        this.answerRepository = answerRepository;
+        this.optionRepository = optionRepository;
     }
 
     @PostMapping
-    public ResponseEntity<QuestionDTO> createQuestion(@RequestBody QuestionDTO incomingQuestion) {
-        return siteRepository.findById(incomingQuestion.getSiteId())
-                             .map(site -> {
-                                 final Question newQ = QuestionDTO.createQuestion(incomingQuestion, site);
-                                 return new ResponseEntity<>(QuestionDTO.build(questionRepository.save(newQ)), HttpStatus.CREATED);
-                             })
+    public ResponseEntity<QuestionDTO> createQuestion(@RequestBody QuestionDTO questionDTO) {
+        return siteRepository.findById(questionDTO.getSiteId())
+                             .map(questionDTO::createQuestion)
+                             .map(questionRepository::save)
+                             .map(question -> ResponseEntity.status(HttpStatus.CREATED).body(QuestionDTO.build(question)))
                              .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-	@GetMapping
-	public ResponseEntity<List<QuestionDTO>> getQuestions() {
-		return ResponseEntity.ok(QuestionDTO.build(questionRepository.findAll()));
-	}
+    @GetMapping
+    public ResponseEntity<List<QuestionDTO>> getQuestions() {
+        return ResponseEntity.ok(questionRepository.findAll()
+                                                   .stream()
+                                                   .map(QuestionDTO::build)
+                                                   .collect(Collectors.toList()));
+    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<QuestionDTO> updateQuestion(@RequestBody Question incomingQuestion, @PathVariable(value = "id") Long questionId) {
+    public ResponseEntity<QuestionDTO> updateQuestion(@PathVariable(value = "id") Long questionId,
+                                                      @RequestBody QuestionDTO questionDTO) {
         return questionRepository.findById(questionId)
-                                 .map(question -> {
-                                     question.setQuestion(incomingQuestion.getQuestion());
-                                     question.setSite(incomingQuestion.getSite());
-                                     return ResponseEntity.ok(QuestionDTO.build(questionRepository.save(question)));
-                                 })
+                                 .map(questionDTO::updateQuestion)
+                                 .map(questionRepository::save)
+                                 .map(question -> ResponseEntity.ok(QuestionDTO.build(question)))
                                  .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -73,22 +81,29 @@ public class QuestionController {
                                  .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-	@PostMapping("/{id}/answers")
-	public ResponseEntity<QuestionAnswerDTO> createQuestionAnswers(@PathVariable(value = "id") Long questionId,
+    @PostMapping("/{id}/answers")
+    public ResponseEntity<QuestionAnswerDTO> createQuestionAnswers(@PathVariable(value = "id") Long questionId,
                                                                    @RequestBody QuestionAnswerDTO newQADto) {
-		return questionRepository
-				.findById(questionId)
-				.map(question -> {
-					final QuestionAnswer newQa = QuestionAnswerDTO.transform(newQADto, question);
-					return new ResponseEntity<>(QuestionAnswerDTO.build(qaRepository.save(newQa)), HttpStatus.CREATED);
-				})
-				.orElseGet(() -> ResponseEntity.notFound().build());
-	}
+        return questionRepository.findById(questionId)
+                                 .map(question -> answerRepository.save(newQADto.transform(question)))
+                                 .map(savedAnswer -> {
+                                     List<QuestionAnswerOption> answerOptions = optionRepository.saveAll(newQADto.transform(savedAnswer));
+                                     savedAnswer.setAnswerOptions(answerOptions);
+                                     return new ResponseEntity<>(QuestionAnswerDTO.build(savedAnswer), HttpStatus.CREATED);
+                                 })
+                                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
     @GetMapping("/{id}/answers")
     public ResponseEntity<List<QuestionAnswerDTO>> getQuestionAnswers(@PathVariable(value = "id") Long questionId) {
         return questionRepository.findById(questionId)
-                                 .map(question -> ResponseEntity.ok(QuestionAnswerDTO.build(question.getAnswers())))
-                                 .orElseGet(() -> ResponseEntity.notFound().build());
+                                 .map(question -> {
+                                     QuestionAnswer questionAnswer = new QuestionAnswer();
+                                     questionAnswer.setQuestion(new Question(questionId));
+                                     return ResponseEntity.ok(answerRepository.findAll(Example.of(questionAnswer))
+                                                                              .stream()
+                                                                              .map(QuestionAnswerDTO::build)
+                                                                              .collect(Collectors.toList()));
+                                 }).orElse(ResponseEntity.notFound().build());
     }
 }

@@ -2,100 +2,65 @@ package com.challenge.demo.question.dto;
 
 import com.challenge.demo.question.Question;
 import com.challenge.demo.question.QuestionAnswer;
+import com.challenge.demo.question.QuestionAnswerOption;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class QuestionAnswerDTO {
 
-	private Long id;
+    private Long id;
+    private Long questionId;
+    private String answer;
+    private boolean isCorrectAnswer;
+    private Date createdAt;
+    private Date updatedAt;
+    private List<QuestionAnswerOptionDTO> options;
 
-	private Long questionId;
+    public QuestionAnswerDTO(Long id,
+                             Long questionId,
+                             String answer,
+                             boolean isCorrectAnswer,
+                             Date createdAt,
+                             Date updatedAt,
+                             List<QuestionAnswerOptionDTO> options) {
+        this.id = id;
+        this.questionId = questionId;
+        this.answer = answer;
+        this.isCorrectAnswer = isCorrectAnswer;
+        this.options = options;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
-	private String answer;
+    public QuestionAnswer transform(final Question question) {
+        final QuestionAnswer questionAnswer = new QuestionAnswer();
+        questionAnswer.setId(id);
+        questionAnswer.setQuestion(question);
+        questionAnswer.setAnswer(answer);
+        questionAnswer.setCorrectAnswer(isCorrectAnswer);
+        return questionAnswer;
+    }
 
-	private boolean isCorrectAnswer;
+    public List<QuestionAnswerOption> transform(final QuestionAnswer questionAnswer) {
+        return options.stream().map(dto -> dto.transform(questionAnswer)).collect(Collectors.toList());
+    }
 
-	private Date createdAt;
-
-	private Date updatedAt;
-
-	public static QuestionAnswer transform(final QuestionAnswerDTO newQADto, final Question question) {
-		final QuestionAnswer newQa = new QuestionAnswer();
-		newQa.setAnswer(newQADto.getAnswer());
-		newQa.setIsCorrectAnswer(newQADto.getIsCorrectAnswer());
-		newQa.setQuestion(question);
-
-		return newQa;
-	}
-
-	public static QuestionAnswerDTO build(final QuestionAnswer save) {
-		final QuestionAnswerDTO newQaDto = new QuestionAnswerDTO();
-
-		newQaDto.setId(save.getId());
-		newQaDto.setAnswer(save.getAnswer());
-		newQaDto.setIsCorrectAnswer(save.isCorrectAnswer());
-		newQaDto.setCreatedAt(save.getCreatedAt());
-		newQaDto.setUpdatedAt(save.getUpdatedAt());
-		newQaDto.setQuestionId(save.getQuestion().getQuestionId());
-
-		return newQaDto;
-	}
-
-	public static List<QuestionAnswerDTO> build(final List<QuestionAnswer> answers) {
-		final List<QuestionAnswerDTO> ret = new ArrayList<>();
-		for (QuestionAnswer qa : answers) {
-			ret.add(build(qa));
-		}
-		return ret;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(final Long id) {
-		this.id = id;
-	}
-
-	public Long getQuestionId() {
-		return questionId;
-	}
-
-	public void setQuestionId(final Long questionId) {
-		this.questionId = questionId;
-	}
-
-	public String getAnswer() {
-		return answer;
-	}
-
-	public void setAnswer(final String answer) {
-		this.answer = answer;
-	}
-
-	public boolean getIsCorrectAnswer() {
-		return isCorrectAnswer;
-	}
-
-	public void setIsCorrectAnswer(final boolean correctAnswer) {
-		isCorrectAnswer = correctAnswer;
-	}
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(final Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(final Date updatedAt) {
-		this.updatedAt = updatedAt;
-	}
+    public static QuestionAnswerDTO build(final QuestionAnswer questionAnswer) {
+        return new QuestionAnswerDTO(
+                questionAnswer.getId(),
+                questionAnswer.getQuestion().getQuestionId(),
+                questionAnswer.getAnswer(),
+                questionAnswer.isCorrectAnswer(),
+                questionAnswer.getCreatedAt(),
+                questionAnswer.getUpdatedAt(),
+                questionAnswer.getAnswerOptions()
+                              .stream()
+                              .map(QuestionAnswerOptionDTO::build)
+                              .collect(Collectors.toList())
+        );
+    }
 }

@@ -25,7 +25,7 @@ public class Site implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "site_id")
 	private Long siteId;
 
@@ -45,7 +45,14 @@ public class Site implements Serializable {
 	@LastModifiedDate
 	private Date updatedAt;
 
-	public UUID getSiteUUID() {
+    public Site() {
+    }
+
+    public Site(Long siteId) {
+        this.siteId = siteId;
+    }
+
+    public UUID getSiteUUID() {
 		return siteUUID;
 	}
 
