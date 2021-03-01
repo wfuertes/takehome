@@ -2,10 +2,15 @@ package com.challenge.demo.site.dto;
 
 import com.challenge.demo.site.Site;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 import java.util.UUID;
 
+@JsonInclude(Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class SiteDTO {
 
@@ -15,7 +20,12 @@ public class SiteDTO {
     private final Date createdAt;
     private final Date updatedAt;
 
-    public SiteDTO(Long siteId, String siteUUID, String url, Date createdAt, Date updatedAt) {
+    @JsonCreator
+    public SiteDTO(@JsonProperty("siteId") Long siteId,
+                   @JsonProperty("siteUUID") String siteUUID,
+                   @JsonProperty("url") String url,
+                   @JsonProperty("createAt") Date createdAt,
+                   @JsonProperty("updatedAt") Date updatedAt) {
         this.siteId = siteId;
         this.siteUUID = siteUUID;
         this.url = url;

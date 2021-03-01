@@ -5,7 +5,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Column;
-import javax.persistence.Converter;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
@@ -51,6 +50,10 @@ public class Site implements Serializable {
 
     public Site(Long siteId) {
         this.siteId = siteId;
+    }
+
+    public Site(UUID siteUUID) {
+        this.siteUUID = siteUUID;
     }
 
     public UUID getSiteUUID() {

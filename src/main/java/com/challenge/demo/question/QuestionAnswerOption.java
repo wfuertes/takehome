@@ -38,6 +38,9 @@ public class QuestionAnswerOption implements Serializable {
     @Column(name = "option_text")
     private String optionText;
 
+    @Column(name = "pickable")
+    private boolean pickable;
+
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, updatable = false)
@@ -70,6 +73,14 @@ public class QuestionAnswerOption implements Serializable {
 
     public void setOptionText(String optionText) {
         this.optionText = optionText;
+    }
+
+    public boolean isPickable() {
+        return pickable;
+    }
+
+    public void setPickable(boolean pickable) {
+        this.pickable = pickable;
     }
 
     public Date getCreatedAt() {

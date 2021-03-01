@@ -17,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -24,6 +25,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -38,7 +40,7 @@ public class Question implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long questionId;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", referencedColumnName = "site_id")
     private Site site;
 
@@ -50,6 +52,9 @@ public class Question implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type")
     private QuestionType questionType;
+
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
+    private List<QuestionAnswer> answers;
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
@@ -66,6 +71,10 @@ public class Question implements Serializable {
 
     public Question(Long questionId) {
         this.questionId = questionId;
+    }
+
+    public Question(Site site) {
+        this.site = site;
     }
 
     public Long getQuestionId() {
@@ -98,6 +107,14 @@ public class Question implements Serializable {
 
     public void setQuestionType(QuestionType questionType) {
         this.questionType = questionType;
+    }
+
+    public List<QuestionAnswer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<QuestionAnswer> answers) {
+        this.answers = answers;
     }
 
     public Date getCreatedAt() {
