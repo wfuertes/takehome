@@ -75,7 +75,7 @@ public class SurveyController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Site not found for siteUuid: " + siteUuid);
         }
 
-        return surveyRepository.findOne(Example.of(new Survey(site.get().getSiteUUID(), UUID.fromString(userUuid))))
+        return surveyRepository.findOne(Example.of(new Survey(UUID.fromString(userUuid), site.get().getSiteUUID())))
                                .map(survey -> {
                                    List<SurveyQuestion> surveyQuestions =
                                            surveyQuestionRepository.findAll(
@@ -127,6 +127,10 @@ public class SurveyController {
                                  .body("SurveyQuestion already answered for surveyId: " + survey.get()
                                                                                                 .getId() + ", and questionId: " + questionId);
         }
+
+        SurveyQuestion surveyQuestionAnswered = surveyQuestion.get();
+        surveyQuestionAnswered.setAnswered(true);
+        surveyQuestionRepository.save(surveyQuestionAnswered);
 
         surveyAnswerRepository.saveAll(answerDTO.transform(surveyQuestion.get()));
         return ResponseEntity.status(HttpStatus.CREATED).build();
