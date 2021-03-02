@@ -55,28 +55,15 @@ public class SurveyController {
         }
 
         Survey survey = surveyRepository.save(new Survey(UUID.fromString(userUuid), site.get().getSiteUUID()));
-
-        List<SurveyQuestion> surveyQuestions =
-                questionRepository.findAll(Example.of(new Question(site.get())))
-                                  .stream()
-                                  .map(question -> {
-                                      SurveyQuestion surveyQuestion = new SurveyQuestion();
-                                      surveyQuestion.setId(SurveyQuestion.Id.of(survey.getId(), question.getQuestionId()));
-                                      surveyQuestion.setAnswered(false);
-                                      return surveyQuestion;
-                                  })
-                                  .collect(Collectors.toList());
-
-        List<Long> questionIds = surveyQuestionRepository.saveAll(surveyQuestions)
-                                                         .stream()
-                                                         .map(surveyQuestion -> surveyQuestion.getId().getQuestionId())
-                                                         .collect(Collectors.toList());
+        List<Question> questions = questionRepository.findAll(Example.of(new Question(site.get())));
+        surveyQuestionRepository.saveAll(questions.stream()
+                                                  .map(question -> SurveyQuestion.of(survey.getId(), question.getQuestionId()))
+                                                  .collect(Collectors.toList()));
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                             .body(questionRepository.findAllById(questionIds)
-                                                     .stream()
-                                                     .map(WidgetQuestionDTO::build)
-                                                     .collect(Collectors.toList()));
+                             .body(questions.stream()
+                                            .map(WidgetQuestionDTO::build)
+                                            .collect(Collectors.toList()));
     }
 
     @GetMapping("/site/{siteUuid}/questions")

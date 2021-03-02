@@ -14,6 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -42,9 +43,20 @@ public class Survey implements Serializable {
     public Survey() {
     }
 
+    public Survey(Long id) {
+        this.id = id;
+    }
+
     public Survey(UUID userUuid, UUID siteUuid) {
         this.userUuid = userUuid;
         this.siteUuid = siteUuid;
+    }
+
+    public Survey(Long id, UUID userUuid, UUID siteUuid, Date createdAt) {
+        this.id = id;
+        this.userUuid = userUuid;
+        this.siteUuid = siteUuid;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -77,5 +89,22 @@ public class Survey implements Serializable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Survey)) {
+            return false;
+        }
+        Survey survey = (Survey) o;
+        return Objects.equals(id, survey.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

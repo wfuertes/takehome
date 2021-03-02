@@ -56,6 +56,12 @@ public class Site implements Serializable {
         this.siteUUID = siteUUID;
     }
 
+    public Site(Long siteId, UUID siteUUID, String url) {
+        this.siteId = siteId;
+        this.siteUUID = siteUUID;
+        this.url = url;
+    }
+
     public UUID getSiteUUID() {
 		return siteUUID;
 	}

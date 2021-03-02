@@ -6,6 +6,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "survey_question")
@@ -17,7 +18,7 @@ public class SurveyQuestion implements Serializable {
     private SurveyQuestion.Id id;
 
     @Column(name = "answered", nullable = false)
-    private Boolean answered;
+    private boolean answered;
 
     public Id getId() {
         return id;
@@ -27,7 +28,7 @@ public class SurveyQuestion implements Serializable {
         this.id = id;
     }
 
-    public Boolean getAnswered() {
+    public boolean getAnswered() {
         return answered;
     }
 
@@ -84,6 +85,23 @@ public class SurveyQuestion implements Serializable {
 
         public void setQuestionId(Long questionId) {
             this.questionId = questionId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Id)) {
+                return false;
+            }
+            Id id = (Id) o;
+            return Objects.equals(surveyId, id.surveyId) && Objects.equals(questionId, id.questionId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(surveyId, questionId);
         }
     }
 }
