@@ -57,9 +57,9 @@ public class SurveyController {
         }
 
         Survey survey = surveyRepository.save(new Survey(UUID.fromString(userUuid), site.get().siteUUID()));
-        List<Question> questions = questionRepository.findAll(Example.of(new Question(site.get())));
+        List<Question> questions = questionRepository.findAll(Example.of(Question.builder().site(site.get()).build()));
         surveyQuestionRepository.saveAll(questions.stream()
-                                                  .map(question -> SurveyQuestion.of(survey.getId(), question.getQuestionId()))
+                                                  .map(question -> SurveyQuestion.of(survey.getId(), question.questionId()))
                                                   .collect(Collectors.toList()));
 
         return ResponseEntity.status(HttpStatus.CREATED)

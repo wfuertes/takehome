@@ -25,7 +25,7 @@ public class QuestionAnswerDTO {
     private Date updatedAt;
 
     @JsonInclude(Include.NON_EMPTY)
-    private List<QuestionAnswerOptionDTO> options;
+    private final List<QuestionAnswerOptionDTO> options;
 
     @JsonCreator
     public QuestionAnswerDTO(@JsonProperty("id") Long id,
@@ -60,7 +60,7 @@ public class QuestionAnswerDTO {
     public static QuestionAnswerDTO build(final QuestionAnswer questionAnswer) {
         return new QuestionAnswerDTO(
                 questionAnswer.getId(),
-                questionAnswer.getQuestion().getQuestionId(),
+                questionAnswer.getQuestion().questionId(),
                 questionAnswer.getAnswer(),
                 questionAnswer.isCorrectAnswer(),
                 questionAnswer.getCreatedAt(),

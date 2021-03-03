@@ -43,26 +43,27 @@ public class QuestionDTO {
     }
 
     public Question createQuestion(final Site site) {
-        final Question question = new Question();
-        question.setSite(site);
-        question.setQuestion(this.question);
-        question.setQuestionType(questionType);
-        return question;
+        return Question.builder()
+                       .site(site)
+                       .question(question)
+                       .questionType(questionType)
+                       .build();
     }
 
     public Question updateQuestion(Question existingQuestion) {
-        existingQuestion.setSite(Site.builder().siteId(siteId).build());
-        existingQuestion.setQuestion(question);
-        existingQuestion.setQuestionType(this.questionType);
-        return existingQuestion;
+        return existingQuestion.toBuilder()
+                               .site(Site.builder().siteId(siteId).build())
+                               .question(question)
+                               .questionType(questionType)
+                               .build();
     }
 
     public static QuestionDTO build(Question question) {
-        return new QuestionDTO(question.getQuestionId(),
-                               question.getSite().siteId(),
-                               question.getQuestion(),
-                               question.getQuestionType(),
-                               question.getCreatedAt(),
-                               question.getUpdatedAt());
+        return new QuestionDTO(question.questionId(),
+                               question.site().siteId(),
+                               question.question(),
+                               question.questionType(),
+                               question.createdAt(),
+                               question.updatedAt());
     }
 }

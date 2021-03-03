@@ -1,6 +1,14 @@
 package com.challenge.demo.question;
 
 import com.challenge.demo.site.Site;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -26,11 +34,17 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "question")
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@ToString
+@Accessors(fluent = true)
+@Builder(toBuilder = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Question implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,6 +52,7 @@ public class Question implements Serializable {
     @Id
     @Column(name = "question_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long questionId;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -53,6 +68,7 @@ public class Question implements Serializable {
     @Column(name = "question_type")
     private QuestionType questionType;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
     private List<QuestionAnswer> answers;
 
@@ -65,92 +81,4 @@ public class Question implements Serializable {
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-
-    public Question() {
-    }
-
-    public Question(Long questionId) {
-        this.questionId = questionId;
-    }
-
-    public Question(Site site) {
-        this.site = site;
-    }
-
-    public Long getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(Long questionId) {
-        this.questionId = questionId;
-    }
-
-    public Site getSite() {
-        return site;
-    }
-
-    public void setSite(Site site) {
-        this.site = site;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public QuestionType getQuestionType() {
-        return questionType;
-    }
-
-    public void setQuestionType(QuestionType questionType) {
-        this.questionType = questionType;
-    }
-
-    public List<QuestionAnswer> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(List<QuestionAnswer> answers) {
-        this.answers = answers;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final Question question1 = (Question) o;
-        return Objects.equals(questionId, question1.questionId) &&
-                Objects.equals(site, question1.site) &&
-                Objects.equals(question, question1.question) &&
-                Objects.equals(createdAt, question1.createdAt) &&
-                Objects.equals(updatedAt, question1.updatedAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(questionId, site, question, createdAt, updatedAt);
-    }
 }

@@ -74,14 +74,15 @@ class SurveyControllerTest {
                         .url("www.dot.com")
                         .build();
         Survey survey = new Survey(1L, UUID.fromString(siteUuid), UUID.fromString(userUuid), new Date());
+        Question question = Question.builder()
+                                    .questionId(1L)
+                                    .question("Test?")
+                                    .questionType(QuestionType.TRIVIA)
+                                    .site(site)
+                                    .answers(Collections.emptyList())
+                                    .build();
 
-        Question question = new Question(1L);
-        question.setQuestion("Test?");
-        question.setQuestionType(QuestionType.TRIVIA);
-        question.setSite(site);
-        question.setAnswers(Collections.emptyList());
-
-        SurveyQuestion surveyQuestion = SurveyQuestion.of(survey.getId(), question.getQuestionId());
+        SurveyQuestion surveyQuestion = SurveyQuestion.of(survey.getId(), question.questionId());
 
         when(siteRepository.findOne(any())).thenReturn(Optional.of(site));
         when(surveyRepository.save(any())).thenReturn(survey);

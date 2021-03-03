@@ -99,7 +99,7 @@ public class QuestionController {
         return questionRepository.findById(questionId)
                                  .map(question -> {
                                      QuestionAnswer questionAnswer = new QuestionAnswer();
-                                     questionAnswer.setQuestion(new Question(questionId));
+                                     questionAnswer.setQuestion(Question.builder().questionId(questionId).build());
                                      return ResponseEntity.ok(answerRepository.findAll(Example.of(questionAnswer))
                                                                               .stream()
                                                                               .map(QuestionAnswerDTO::build)

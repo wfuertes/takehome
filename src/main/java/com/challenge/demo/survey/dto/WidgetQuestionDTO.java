@@ -35,10 +35,10 @@ public class WidgetQuestionDTO {
 
     public static WidgetQuestionDTO build(Question question) {
         return new WidgetQuestionDTO(
-                question.getQuestionId(),
-                question.getQuestion(),
-                question.getQuestionType(),
-                question.getAnswers()
+                question.questionId(),
+                question.question(),
+                question.questionType(),
+                question.answers()
                         .stream()
                         .map(Answer::build)
                         .collect(Collectors.toList())
