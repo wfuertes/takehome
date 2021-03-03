@@ -51,7 +51,7 @@ public class QuestionDTO {
     }
 
     public Question updateQuestion(Question existingQuestion) {
-        existingQuestion.setSite(new Site(siteId));
+        existingQuestion.setSite(Site.builder().siteId(siteId).build());
         existingQuestion.setQuestion(question);
         existingQuestion.setQuestionType(this.questionType);
         return existingQuestion;
@@ -59,7 +59,7 @@ public class QuestionDTO {
 
     public static QuestionDTO build(Question question) {
         return new QuestionDTO(question.getQuestionId(),
-                               question.getSite().getSiteId(),
+                               question.getSite().siteId(),
                                question.getQuestion(),
                                question.getQuestionType(),
                                question.getCreatedAt(),

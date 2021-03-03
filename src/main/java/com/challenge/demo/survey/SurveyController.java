@@ -48,13 +48,15 @@ public class SurveyController {
     public ResponseEntity<?> createSurvey(@RequestHeader("userUuid") String userUuid,
                                           @PathVariable("siteUuid") String siteUuid) {
 
-        Optional<Site> site = siteRepository.findOne(Example.of(new Site(UUID.fromString(siteUuid))));
+        Optional<Site> site = siteRepository.findOne(Example.of(Site.builder()
+                                                                    .siteUUID(UUID.fromString(siteUuid))
+                                                                    .build()));
 
         if (!site.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Site found for siteUuid: " + siteUuid);
         }
 
-        Survey survey = surveyRepository.save(new Survey(UUID.fromString(userUuid), site.get().getSiteUUID()));
+        Survey survey = surveyRepository.save(new Survey(UUID.fromString(userUuid), site.get().siteUUID()));
         List<Question> questions = questionRepository.findAll(Example.of(new Question(site.get())));
         surveyQuestionRepository.saveAll(questions.stream()
                                                   .map(question -> SurveyQuestion.of(survey.getId(), question.getQuestionId()))
@@ -69,13 +71,15 @@ public class SurveyController {
     @GetMapping("/site/{siteUuid}/questions")
     public ResponseEntity<?> getSurveyQuestions(@RequestHeader("userUuid") String userUuid,
                                                 @PathVariable("siteUuid") String siteUuid) {
-        Optional<Site> site = siteRepository.findOne(Example.of(new Site(UUID.fromString(siteUuid))));
+        Optional<Site> site = siteRepository.findOne(Example.of(Site.builder()
+                                                                    .siteUUID(UUID.fromString(siteUuid))
+                                                                    .build()));
 
         if (!site.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Site not found for siteUuid: " + siteUuid);
         }
 
-        return surveyRepository.findOne(Example.of(new Survey(UUID.fromString(userUuid), site.get().getSiteUUID())))
+        return surveyRepository.findOne(Example.of(new Survey(UUID.fromString(userUuid), site.get().siteUUID())))
                                .map(survey -> {
                                    List<SurveyQuestion> surveyQuestions =
                                            surveyQuestionRepository.findAll(

@@ -34,24 +34,25 @@ public class SiteDTO {
     }
 
     public Site createSite(UUID siteUUID) {
-        Site site = new Site();
-        site.setSiteUUID(siteUUID);
-        site.setUrl(url);
-        return site;
+        return Site.builder()
+                   .siteUUID(siteUUID)
+                   .url(url)
+                   .build();
     }
 
     public Site updateSite(Site site) {
-        site.setUrl(url);
-        return site;
+        return site.toBuilder()
+                   .url(url)
+                   .build();
     }
 
     public static SiteDTO build(Site site) {
         return new SiteDTO(
-                site.getSiteId(),
-                site.getSiteUUID().toString(),
-                site.getUrl(),
-                site.getCreatedAt(),
-                site.getUpdatedAt()
+                site.siteId(),
+                site.siteUUID().toString(),
+                site.url(),
+                site.createdAt(),
+                site.updatedAt()
         );
     }
 }

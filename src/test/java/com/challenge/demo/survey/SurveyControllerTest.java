@@ -68,7 +68,11 @@ class SurveyControllerTest {
         String userUuid = "817ea573-f15a-4122-913a-f73ed78d4b3e";
         String siteUuid = "f0ec3d9d-17f8-45fe-a5bf-a4c8ec3e2a2e";
 
-        Site site = new Site(1L, UUID.fromString(siteUuid), "www.dot.com");
+        Site site = Site.builder()
+                        .siteId(1L)
+                        .siteUUID(UUID.fromString(siteUuid))
+                        .url("www.dot.com")
+                        .build();
         Survey survey = new Survey(1L, UUID.fromString(siteUuid), UUID.fromString(userUuid), new Date());
 
         Question question = new Question(1L);

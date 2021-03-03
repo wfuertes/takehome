@@ -20,25 +20,27 @@ import java.util.stream.Collectors;
 @RequestMapping("/sites")
 public class SiteController {
 
-	private final SiteRepository siteRepository;
+    private final SiteRepository siteRepository;
 
     public SiteController(SiteRepository siteRepository) {
         this.siteRepository = siteRepository;
     }
 
     @PostMapping
-    public ResponseEntity<Site> createSite(@RequestBody SiteDTO siteDTO) {
+    public ResponseEntity<SiteDTO> createSite(@RequestBody SiteDTO siteDTO) {
+        Site siteCreated = siteRepository.save(siteDTO.createSite(UUID.randomUUID()));
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                             .body(siteRepository.save(siteDTO.createSite(UUID.randomUUID())));
+                             .body(SiteDTO.build(siteCreated));
     }
 
-	@GetMapping
-	public ResponseEntity<List<SiteDTO>> getSites() {
+    @GetMapping
+    public ResponseEntity<List<SiteDTO>> getSites() {
         return ResponseEntity.ok(siteRepository.findAll()
                                                .stream()
                                                .map(SiteDTO::build)
                                                .collect(Collectors.toList()));
-	}
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<SiteDTO> updateSite(@PathVariable(value = "id") Long siteId, @RequestBody SiteDTO siteDTO) {
